@@ -1,14 +1,26 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import store, { UPDATE_INSTRUCTIONS, ADD_RECIPE } from "../../store";
 
 class Instructions extends Component {
   constructor(props) {
     super(props);
+    const storeState = store.getState()
     this.state = {
-      instructions: [],
+      instructions: storeState.instructions,
       input: ""
     };
   }
+
+  componentDidMount(){
+    store.subscribe(() => {
+      const storeState = store.getState()
+      this.setState({
+        instructions: storeState.instructions
+      })
+    })
+  }
+
   handleChange(val) {
     this.setState({
       input: val
@@ -16,12 +28,19 @@ class Instructions extends Component {
   }
   addInstruction() {
     // Send data to Redux state
+    store.dispatch({
+      type: UPDATE_INSTRUCTIONS,
+      payload: this.state.input
+    })
     this.setState({
       input: ""
     });
   }
   create() {
     // Create new recipe in Redux state
+    store.dispatch({
+      type: ADD_RECIPE
+    })
   }
   render() {
     const instructions = this.state.instructions.map((instruction, i) => {
@@ -37,6 +56,7 @@ class Instructions extends Component {
           <input
             value={this.state.input}
             onChange={e => this.handleChange(e.target.value)}
+            vaule={this.state.input}
           />
           <button className="add_button" onClick={() => this.addInstruction()}>
             Add Instruction
